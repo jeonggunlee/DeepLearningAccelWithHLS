@@ -67,8 +67,9 @@
 
 ✔ Output 1회만 전송 (DMA 효율 ↑)
 
-🔷 핵심 특징 6가지
-① AXI-Stream 기반 순수 스트리밍 커널
+## 🔷 핵심 특징 4가지
+
+### ① AXI-Stream 기반 순수 스트리밍 커널
 
 ```
 #pragma HLS INTERFACE axis port=s_in
@@ -83,8 +84,8 @@
 
 ⭐ Zynq에 최적
 - PS–PL streaming 아키텍처에 딱 맞음
-- ② Ktiles 내부 누적 구조 (가장 중요)
 
+### ② Ktiles 내부 누적 구조 (가장 중요)
 ```
 for (kt=0; kt<Ktiles; kt++)
     C[i][j] += A×B;
@@ -116,7 +117,7 @@ for bk:
 - 현재: tile × 2
 - ⭐ 성능 대폭 향상
 
-③ ARRAY_PARTITION 완전 병렬화
+### ③ ARRAY_PARTITION 완전 병렬화
 ```
 #pragma HLS ARRAY_PARTITION variable=A complete dim=2
 #pragma HLS ARRAY_PARTITION variable=B complete dim=1
@@ -135,7 +136,7 @@ B[k][j] → k 방향 병렬 읽기
 - ⭐ 한 cycle에 8~16개 곱셈 가능
 - 👉 이 pragma가 성능의 핵심
 
-④ 수동 Adder Tree (Timing-safe 핵심 설계)
+### ④ 수동 Adder Tree (Timing-safe 핵심 설계)
 일반 naive 방식
 ```
 sum += A[i][k]*B[k][j];
