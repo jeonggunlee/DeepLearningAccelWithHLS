@@ -7,7 +7,7 @@ HLS를 이용한 딥러닝 가속 - 행렬곱 가속기 설계 및 딥러닝에 
 - 문제점: tiling되는 경우 누적이 host에서 진행되기 때문에 tiling된 C 행렬의 partial result가 지속적으로 DMA를 통해 PS<->PL간 이동해야함.
 
 ### Matmul2
-8x8 행렬곱을 이용한 16x16 행렬곱 설계.
+16x16 행렬곱을 이용한 32x32 행렬곱 설계.
 - 문제점: tiling되는 경우 누적이 host에서 진행되기 때문에 tiling된 C 행렬의 partial result가 지속적으로 DMA를 통해 PS<->PL간 이동해야함.
 
 ### Matmul3
