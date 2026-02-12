@@ -45,12 +45,8 @@
 
 
 # HLS 설계 (ChatGPT)
-좋은 커널입니다 👍
-지금 gemm16_accum_axis.cpp는 “Zynq-7000 + AXI DMA + HLS” 환경에서 timing/throughput/CSIM 안정성까지 모두 고려한 상당히 잘 설계된 GEMM 가속기 구조입니다.
-
-단순 GEMM이 아니라 **“실제 FPGA에서 돌아가도록 구조적으로 최적화된 버전”**이라서, 설계 관점에서 어떤 점이 좋은지 정리해 드리겠습니다.
-
 ✅ 전체 아키텍처 한눈 요약
+```
 동작 모델
 (Ktiles 번 반복)
    A(16x16) 수신
@@ -59,7 +55,7 @@
 
 마지막에
    C(16x16) 한 번만 출력
-
+```
 
 즉:
 
@@ -71,32 +67,31 @@
 
 🔷 핵심 특징 6가지
 ① AXI-Stream 기반 순수 스트리밍 커널
+
+```
 #pragma HLS INTERFACE axis port=s_in
 #pragma HLS INTERFACE axis port=s_out
+```
 
 의미
 
-DMA와 직접 연결
-
-DDR → AXIS → Kernel → AXIS → DDR
-
-memcpy/BRAM copy 없음
+- DMA와 직접 연결
+- DDR → AXIS → Kernel → AXIS → DDR
+- memcpy/BRAM copy 없음
 
 효과
 ⭐ Throughput 최대
 
-II=1 가능
-
-매 cycle 1 word
+- II=1 가능
+- 매 cycle 1 word
 
 ⭐ Zynq에 최적
-
-PS–PL streaming 아키텍처에 딱 맞음
-
-② Ktiles 내부 누적 구조 (가장 중요)
+- PS–PL streaming 아키텍처에 딱 맞음
+- ② Ktiles 내부 누적 구조 (가장 중요)
+```
 for (kt=0; kt<Ktiles; kt++)
     C[i][j] += A×B;
-
+```
 의미
 
 Host가 C partial sum 관리 안 함
@@ -104,9 +99,10 @@ Host가 C partial sum 관리 안 함
 커널 내부에서 누적
 
 기존 방식(나쁜 구조)
+```
 for bk:
    DMA → compute → DMA → compute → DMA ...
-
+```
 
 👉 DMA 호출 폭증
 
