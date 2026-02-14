@@ -44,6 +44,62 @@
 
 
 # HLS 설계 (ChatGPT)
-✅ 전체 아키텍처 한눈 요약
-- stream pipeline 구조
+## 🔷 1️⃣ 전체 구조 개요
+🎯 기능
+- 16×16 GEMM 수행
+- 내부 누적(accumulation)
+- Ktiles 만큼 반복 누적
+- AXI4-Stream 입출력
+- AXI-Lite 제어 인터페이스
+
+🔄 프로토콜
+- 입력
+```
+Ktiles × [A(256) + B(256)] = 512 words per tile
+```
+
+- 출력
+```
+C(256 words)
+TLAST = 마지막 word
+```
+
+## 🔷 2️⃣ 핵심 설계 특징
+
+### ⭐ (1) Double Buffering (Ping-Pong)
+- 목적
+  - Load와 Compute를 동시에 실행
+- 구조
+```
+float A_buf[2][N][N];
+float B_buf[2][N][N];
+```
+
+<img width="586" height="218" alt="image" src="https://github.com/user-attachments/assets/3d8cc4e7-7e15-4eb7-88d1-b99d3fa54b71" />
+
+💡 성능 효과
+- 기존
+```
+Total ≈ K * (recv + compute)
+```
+
+- 현재 구조
+```
+Total ≈ (K+1) * max(recv, compute)
+```
+
+👉 이론적으로 거의 2배 개선 가능
+
+### ⭐ (2) DATAFLOW 병렬화
+```
+#pragma HLS DATAFLOW
+```
+
+- 동시 실행되는 Stage
+  - recv_tile()
+  - load_tile()
+  - mac_tile()
+
+👉 producer/consumer 구조
+
 
