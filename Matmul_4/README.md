@@ -1,5 +1,7 @@
 ## Matmul_4:
 
+<img width="1387" height="429" alt="image" src="https://github.com/user-attachments/assets/0462b0c2-7314-4a80-938f-f5e158abdfe1" />
+
 ## 성능평가:
 
 ===== GEMM (N=32) correct Ktiles protocol =====
